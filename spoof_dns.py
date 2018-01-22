@@ -32,12 +32,12 @@ def main():
         family = socket.AF_INET
         proto = socket.IPPROTO_IP
         ip = ImpactPacket.IP()
-    if isinstance(ip_source, IPv6Address) and isinstance(ip_dest, IPv6Address):
+    elif isinstance(ip_source, IPv6Address) and isinstance(ip_dest, IPv6Address):
         family = socket.AF_INET6
         proto = socket.IPPROTO_IPV6
         ip = IP6.IP()
     else:
-        logging.error('Source IP () and destination IP () need to be the same version'.format(
+        logging.error('Source IP ({}) and destination IP ({}) need to be the same version'.format(
             args.source, args.destination_port))
     query = dns.message.make_query(
             args.qname,
