@@ -33,10 +33,14 @@ def main():
         family = socket.AF_INET
         proto = socket.IPPROTO_IP
         ip = ImpactPacket.IP()
+        ip.set_ip_src(args.source)
+        ip.set_ip_dst(args.destination)
     elif isinstance(ip_source, IPv6Address) and isinstance(ip_dest, IPv6Address):
         family = socket.AF_INET6
         proto = socket.IPPROTO_IPV6
         ip = IP6.IP6()
+        ip.set_source_address(args.source)
+        ip.set_destination_address(args.destination)
     else:
         logging.error('Source IP ({}) and destination IP ({}) need to be the same version'.format(
             args.source, args.destination_port))
@@ -52,8 +56,6 @@ def main():
     udp.set_uh_sport(args.source_port)
     udp.set_uh_dport(args.destination_port)
     udp.contains(data)
-    ip.set_ip_src(args.source)
-    ip.set_ip_dst(args.destination)
     ip.contains(udp)
     s = socket.socket(family, socket.SOCK_RAW, socket.IPPROTO_UDP)
     s.setsockopt(proto, socket.IP_HDRINCL, 1)
