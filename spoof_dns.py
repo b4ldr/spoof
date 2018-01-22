@@ -26,11 +26,13 @@ def get_args():
 def main():
     '''main function for using as cli'''
     args = get_args()
-    if isinstance(ip_address(args.source), IPv4Address) and isinstance(ip_address(args.destination), IPv4Address):
+    ip_source = ip_address(u'' + args.source)
+    ip_dest = ip_address(u'' + args.destination)
+    if isinstance(ip_source, IPv4Address) and isinstance(ip_dest, IPv4Address):
         family = socket.AF_INET
         proto = socket.IPPROTO_IP
         ip = ImpactPacket.IP()
-    elif isinstance(args.source, IPv6Address) and isinstance(args.destination, IPv6Address):
+    if isinstance(ip_source, IPv6Address) and isinstance(ip_dest, IPv6Address):
         family = socket.AF_INET6
         proto = socket.IPPROTO_IPV6
         ip = IP6.IP()
