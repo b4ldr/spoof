@@ -5,7 +5,7 @@ import dns.message
 import dns.rdatatype
 import dns.rdataclass
 import logging
-import os
+from sys import exit
 from impacket import ImpactPacket, IP6
 from ipaddress import ip_address, IPv4Address, IPv6Address
 
@@ -40,7 +40,7 @@ def main():
     else:
         logging.error('Source IP ({}) and destination IP ({}) need to be the same version'.format(
             args.source, args.destination_port))
-        os.exit(1)
+        exit(1)
     query = dns.message.make_query(
             args.qname,
             dns.rdatatype.from_text(args.qtype),
