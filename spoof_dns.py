@@ -4,7 +4,9 @@ import socket
 import dns.message
 import dns.rdatatype
 import dns.rdataclass
-from impacket import ImpactPacket
+import logging
+from impacket import ImpactPacket, IP6
+from ipaddress import ip_address, IPv4Address, IPv6Address
 
 
 def get_args():
@@ -24,6 +26,17 @@ def get_args():
 def main():
     '''main function for using as cli'''
     args = get_args()
+    if isinstance(ip_address(args.source), IPv4Address) and isinstance(ip_address(args.destination), IPv4Address):
+        family = socket.AF_INET
+        proto = socket.IPPROTO_IP
+        ip = ImpactPacket.IP()
+    elif isinstance(args.source, IPv6Address) and isinstance(args.destination, IPv6Address):
+        family = socket.AF_INET6
+        proto = socket.IPPROTO_IPV6
+        ip = IP6.IP()
+    else:
+        logging.error('Source IP () and destination IP () need to be the same version'.format(
+            args.source, args.destination_port))
     query = dns.message.make_query(
             args.qname,
             dns.rdatatype.from_text(args.qtype),
@@ -35,12 +48,11 @@ def main():
     udp.set_uh_sport(args.source_port)
     udp.set_uh_dport(args.destination_port)
     udp.contains(data)
-    ip = ImpactPacket.IP()
     ip.set_ip_src(args.source)
     ip.set_ip_dst(args.destination)
     ip.contains(udp)
-    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
-    s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+    s = socket.socket(family, socket.SOCK_RAW, socket.IPPROTO_UDP)
+    s.setsockopt(proto, socket.IP_HDRINCL, 1)
     s.sendto(ip.get_packet(), (args.destination, args.destination_port))
 
 
